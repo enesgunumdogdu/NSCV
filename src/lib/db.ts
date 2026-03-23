@@ -22,5 +22,15 @@ export function getDb(): Database.Database {
   const schema = fs.readFileSync(SCHEMA_PATH, "utf-8");
   db.exec(schema);
 
+  // Migrations: add columns if they don't exist
+  const jobCols = db.prepare("PRAGMA table_info(jobs)").all() as { name: string }[];
+  const colNames = jobCols.map((c) => c.name);
+  if (!colNames.includes("is_outsource")) {
+    db.exec("ALTER TABLE jobs ADD COLUMN is_outsource INTEGER NOT NULL DEFAULT 0");
+  }
+  if (!colNames.includes("agency_name")) {
+    db.exec("ALTER TABLE jobs ADD COLUMN agency_name TEXT NOT NULL DEFAULT ''");
+  }
+
   return db;
 }

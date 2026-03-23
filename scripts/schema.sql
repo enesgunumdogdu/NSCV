@@ -11,6 +11,8 @@ CREATE TABLE IF NOT EXISTS jobs (
   title TEXT NOT NULL,
   company TEXT NOT NULL DEFAULT '',
   raw_text TEXT NOT NULL,
+  is_outsource INTEGER NOT NULL DEFAULT 0,
+  agency_name TEXT NOT NULL DEFAULT '',
   analysis TEXT, -- JSON blob
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

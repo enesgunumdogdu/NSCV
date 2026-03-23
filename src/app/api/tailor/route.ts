@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
   try {
     if (type === "full") {
-      const { cvData, jobAnalysis } = body;
+      const { cvData, jobAnalysis, isOutsource } = body;
       if (!cvData || !jobAnalysis) {
         return NextResponse.json(
           { error: "cvData and jobAnalysis are required" },
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
 
       const raw = await callAI(
         PROMPTS.tailorCV.system,
-        PROMPTS.tailorCV.user(JSON.stringify(cvData), JSON.stringify(jobAnalysis))
+        PROMPTS.tailorCV.user(JSON.stringify(cvData), JSON.stringify(jobAnalysis), isOutsource)
       );
 
       const parsed = JSON.parse(extractJSON(raw));

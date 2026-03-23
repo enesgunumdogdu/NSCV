@@ -11,14 +11,14 @@ export async function POST(req: NextRequest) {
 
   try {
     if (type === "job") {
-      const { jobText, jobId } = body;
+      const { jobText, jobId, isOutsource } = body;
       if (!jobText) {
         return NextResponse.json({ error: "jobText is required" }, { status: 400 });
       }
 
       const raw = await callAI(
         PROMPTS.analyzeJob.system,
-        PROMPTS.analyzeJob.user(jobText)
+        PROMPTS.analyzeJob.user(jobText, isOutsource)
       );
 
       const parsed = JSON.parse(extractJSON(raw));
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (type === "gap") {
-      const { cvData, jobAnalysis } = body;
+      const { cvData, jobAnalysis, isOutsource } = body;
       if (!cvData || !jobAnalysis) {
         return NextResponse.json(
           { error: "cvData and jobAnalysis are required" },
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
       const raw = await callAI(
         PROMPTS.gapAnalysis.system,
-        PROMPTS.gapAnalysis.user(JSON.stringify(cvData), JSON.stringify(jobAnalysis))
+        PROMPTS.gapAnalysis.user(JSON.stringify(cvData), JSON.stringify(jobAnalysis), isOutsource)
       );
 
       const parsed = JSON.parse(extractJSON(raw));

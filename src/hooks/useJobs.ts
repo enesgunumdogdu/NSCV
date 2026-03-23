@@ -21,7 +21,7 @@ export function useJobs() {
     setLoading(false);
   }, []);
 
-  const createJob = useCallback(async (job: { title: string; company: string; rawText: string }) => {
+  const createJob = useCallback(async (job: { title: string; company: string; rawText: string; isOutsource?: boolean }) => {
     const res = await fetch("/api/jobs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

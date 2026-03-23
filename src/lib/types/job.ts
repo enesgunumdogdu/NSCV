@@ -1,8 +1,9 @@
 export interface JobPosting {
   id: string;
   title: string;
-  company: string;
+  company: string; // outsource ise IK ajansı adı
   rawText: string;
+  isOutsource: boolean;
   analysis: JobAnalysis | null;
   createdAt: string;
 }

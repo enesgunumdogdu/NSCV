@@ -2,7 +2,8 @@ export const PROMPTS = {
   analyzeJob: {
     system: `You are an expert recruiter and job posting analyst. Extract structured information from job postings.
 You MUST respond with valid JSON only — no markdown, no explanation.`,
-    user: (jobText: string) => `Analyze this job posting and extract structured information.
+    user: (jobText: string, isOutsource?: boolean) => `Analyze this job posting and extract structured information.
+${isOutsource ? "\nNOTE: This job is posted by a recruitment agency / outsource company, NOT the actual employer. Focus on the role requirements and industry keywords rather than company-specific details." : ""}
 
 Job Posting:
 ---
@@ -25,7 +26,8 @@ Respond with this exact JSON structure:
     system: `You are an expert career coach and ATS optimization specialist. Compare CVs against job requirements with precision.
 You MUST respond with valid JSON only — no markdown, no explanation.
 Be honest but constructive. Never fabricate skills or experience the candidate doesn't have.`,
-    user: (cvJson: string, jobAnalysis: string) => `Compare this CV against the job requirements and provide a gap analysis.
+    user: (cvJson: string, jobAnalysis: string, isOutsource?: boolean) => `Compare this CV against the job requirements and provide a gap analysis.
+${isOutsource ? "\nNOTE: This is an outsource/recruitment agency posting. Focus on industry-standard keywords and transferable skills rather than company-specific terminology." : ""}
 
 CV:
 ---
@@ -87,7 +89,8 @@ Rules:
 - Optimize for ATS scanning
 - Keep the same JSON structure as the input CV
 Respond with valid JSON only.`,
-    user: (cvJson: string, jobAnalysis: string) => `Tailor this CV to better match the job requirements. Only improve phrasing and emphasis — do not add fake experience.
+    user: (cvJson: string, jobAnalysis: string, isOutsource?: boolean) => `Tailor this CV to better match the job requirements. Only improve phrasing and emphasis — do not add fake experience.
+${isOutsource ? "\nNOTE: This is an outsource/recruitment agency posting. The CV will likely be screened by a recruiter first, then forwarded to the actual company. Optimize for broad industry keywords and make the CV scan-friendly for non-technical recruiters." : ""}
 
 CV:
 ---

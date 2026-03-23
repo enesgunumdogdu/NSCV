@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
+import Badge from "@/components/ui/Badge";
 import GapAnalysis from "@/components/tailor/GapAnalysis";
 import TailoredPreview from "@/components/tailor/TailoredPreview";
 import DiffView from "@/components/ui/DiffView";
@@ -12,7 +13,7 @@ import type { JobPosting, GapAnalysisResult } from "@/lib/types/job";
 
 export default function TailorPage() {
   const [cvList, setCvList] = useState<{ id: string; name: string }[]>([]);
-  const [jobList, setJobList] = useState<{ id: string; title: string; company: string }[]>([]);
+  const [jobList, setJobList] = useState<{ id: string; title: string; company: string; isOutsource?: boolean; is_outsource?: number }[]>([]);
   const [selectedCvId, setSelectedCvId] = useState("");
   const [selectedJobId, setSelectedJobId] = useState("");
   const [cv, setCv] = useState<CV | null>(null);
@@ -46,7 +47,12 @@ export default function TailorPage() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "gap", cvData: cv, jobAnalysis: job.analysis }),
+        body: JSON.stringify({
+          type: "gap",
+          cvData: cv,
+          jobAnalysis: job.analysis,
+          isOutsource: job.isOutsource,
+        }),
       });
       setGapResult(await res.json());
       setActiveTab("gap");
@@ -64,7 +70,12 @@ export default function TailorPage() {
       const res = await fetch("/api/tailor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "full", cvData: cv, jobAnalysis: job.analysis }),
+        body: JSON.stringify({
+          type: "full",
+          cvData: cv,
+          jobAnalysis: job.analysis,
+          isOutsource: job.isOutsource,
+        }),
       });
       setTailorResult(await res.json());
       setActiveTab("tailored");
@@ -77,59 +88,76 @@ export default function TailorPage() {
 
   const handleSaveVersion = async () => {
     if (!tailorResult || !cv || !job) return;
+    const label = job.isOutsource
+      ? `${job.title} - Outsource (${job.company})`
+      : `${job.title} - ${job.company}`;
     await fetch("/api/cv/versions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         cvId: cv.id,
         jobId: job.id,
-        label: `Tailored for ${job.title} at ${job.company}`,
+        label,
         data: tailorResult.tailoredCV,
       }),
     });
-    alert("Version saved!");
+    alert("Versiyon kaydedildi!");
   };
 
   const ready = cv && job?.analysis;
 
   return (
     <div>
-      <Header title="Tailor & Analyze" subtitle="Compare your CV against a job and get AI-powered improvements" />
+      <Header title="Tailorla & Analiz Et" subtitle="CV'ni is ilanina gore karsilastir ve AI ile gelistir" />
 
       <Card className="mb-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="label">Select CV</label>
+            <label className="label">CV Sec</label>
             <select className="input" value={selectedCvId} onChange={(e) => setSelectedCvId(e.target.value)}>
-              <option value="">-- Choose a CV --</option>
+              <option value="">-- CV secin --</option>
               {cvList.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="label">Select Job Posting</label>
+            <label className="label">Is Ilani Sec</label>
             <select className="input" value={selectedJobId} onChange={(e) => setSelectedJobId(e.target.value)}>
-              <option value="">-- Choose a Job --</option>
-              {jobList.map((j) => (
-                <option key={j.id} value={j.id}>{j.title} — {j.company}</option>
-              ))}
+              <option value="">-- Ilan secin --</option>
+              {jobList.map((j) => {
+                const outsource = j.isOutsource || j.is_outsource === 1;
+                return (
+                  <option key={j.id} value={j.id}>
+                    {j.title} — {j.company} {outsource ? "(Outsource)" : ""}
+                  </option>
+                );
+              })}
             </select>
           </div>
         </div>
 
+        {job?.isOutsource && (
+          <div className="mt-3 flex items-center gap-2">
+            <Badge variant="warning">Outsource</Badge>
+            <span className="text-sm text-gray-500">
+              IK ajansi uzerinden — sektore ve pozisyona odakli tailoring yapilacak
+            </span>
+          </div>
+        )}
+
         {job && !job.analysis && (
           <p className="text-sm text-yellow-600 mt-3">
-            This job hasn&apos;t been analyzed yet. Go to Job Postings and analyze it first.
+            Bu ilan henuz analiz edilmedi. Is Ilanlari sayfasindan once analiz edin.
           </p>
         )}
 
         <div className="flex gap-3 mt-4">
           <Button onClick={handleGapAnalysis} disabled={!ready || loading === "gap"}>
-            {loading === "gap" ? "Analyzing..." : "Run Gap Analysis"}
+            {loading === "gap" ? "Analiz ediliyor..." : "Eksik Analizi"}
           </Button>
           <Button variant="secondary" onClick={handleTailor} disabled={!ready || loading === "tailor"}>
-            {loading === "tailor" ? "Tailoring..." : "Auto-Tailor CV"}
+            {loading === "tailor" ? "Tailorlaniyor..." : "Otomatik Tailorla"}
           </Button>
         </div>
       </Card>
@@ -143,7 +171,7 @@ export default function TailorPage() {
                 size="sm"
                 onClick={() => setActiveTab("gap")}
               >
-                Gap Analysis
+                Eksik Analizi
               </Button>
             )}
             {tailorResult && (
@@ -153,14 +181,14 @@ export default function TailorPage() {
                   size="sm"
                   onClick={() => setActiveTab("tailored")}
                 >
-                  Tailored CV
+                  Tailorlanmis CV
                 </Button>
                 <Button
                   variant={activeTab === "diff" ? "primary" : "secondary"}
                   size="sm"
                   onClick={() => setActiveTab("diff")}
                 >
-                  View Changes
+                  Degisiklikleri Gor
                 </Button>
               </>
             )}
@@ -171,7 +199,7 @@ export default function TailorPage() {
           {activeTab === "tailored" && tailorResult && (
             <div>
               <div className="flex justify-end mb-4">
-                <Button onClick={handleSaveVersion} size="sm">Save as Version</Button>
+                <Button onClick={handleSaveVersion} size="sm">Versiyon Olarak Kaydet</Button>
               </div>
               <TailoredPreview cv={tailorResult.tailoredCV} />
             </div>
@@ -179,7 +207,7 @@ export default function TailorPage() {
 
           {activeTab === "diff" && tailorResult && (
             <Card>
-              <h3 className="text-lg font-semibold mb-4">Changes Made</h3>
+              <h3 className="text-lg font-semibold mb-4">Yapilan Degisiklikler</h3>
               <DiffView changes={tailorResult.changes} />
             </Card>
           )}
