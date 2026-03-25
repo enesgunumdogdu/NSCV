@@ -8,7 +8,6 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import JobInput from "@/components/jobs/JobInput";
 import JobAnalysisView from "@/components/jobs/JobAnalysis";
-import type { JobAnalysis } from "@/lib/types/job";
 
 export default function JobsPage() {
   const { jobs, currentJob, loading, fetchJob, createJob, deleteJob } = useJobs();
@@ -45,13 +44,13 @@ export default function JobsPage() {
 
   return (
     <div>
-      <Header title="Is Ilanlari" subtitle="Ilan ekle, analiz et" />
+      <Header title="Job Postings" subtitle="Add and analyze job postings" />
 
       <div className="flex gap-6">
         {/* Job List */}
         <div className="w-64 shrink-0 space-y-2">
           <Button onClick={() => setShowInput(!showInput)} className="w-full">
-            {showInput ? "Iptal" : "+ Yeni Ilan"}
+            {showInput ? "Cancel" : "+ New Posting"}
           </Button>
           {jobs.map((job: { id: string; title: string; company: string; isOutsource?: boolean; is_outsource?: number }) => {
             const outsource = job.isOutsource || job.is_outsource === 1;
@@ -91,12 +90,12 @@ export default function JobsPage() {
         <div className="flex-1">
           {showInput && (
             <Card className="mb-6">
-              <h2 className="text-lg font-semibold mb-4">Yeni Is Ilani Ekle</h2>
+              <h2 className="text-lg font-semibold mb-4">Add New Job Posting</h2>
               <JobInput onSubmit={handleCreateJob} />
             </Card>
           )}
 
-          {loading && <p className="text-sm text-gray-500">Yukleniyor...</p>}
+          {loading && <p className="text-sm text-gray-500">Loading...</p>}
 
           {!loading && currentJob && (
             <div className="space-y-6">
@@ -107,22 +106,22 @@ export default function JobsPage() {
                     <div className="flex items-center gap-2 mt-1">
                       <p className="text-sm text-gray-500">{currentJob.company}</p>
                       {currentJob.isOutsource && (
-                        <Badge variant="warning">Outsource / IK Ajansi</Badge>
+                        <Badge variant="warning">Outsource / Agency</Badge>
                       )}
                     </div>
                   </div>
                   <div className="flex gap-2">
                     {currentJob.analysis ? (
-                      <Badge variant="success">Analiz Edildi</Badge>
+                      <Badge variant="success">Analyzed</Badge>
                     ) : (
                       <Button onClick={handleAnalyze} disabled={analyzing} size="sm">
-                        {analyzing ? "Analiz ediliyor..." : "AI ile Analiz Et"}
+                        {analyzing ? "Analyzing..." : "Analyze with AI"}
                       </Button>
                     )}
                   </div>
                 </div>
                 <details className="mt-4">
-                  <summary className="text-sm text-gray-500 cursor-pointer">Ham ilan metnini gor</summary>
+                  <summary className="text-sm text-gray-500 cursor-pointer">View raw posting text</summary>
                   <pre className="mt-2 text-xs text-gray-600 whitespace-pre-wrap bg-gray-50 p-4 rounded-lg max-h-64 overflow-y-auto">
                     {currentJob.rawText}
                   </pre>
@@ -135,7 +134,7 @@ export default function JobsPage() {
 
           {!loading && !currentJob && !showInput && (
             <Card className="text-center py-16">
-              <p className="text-gray-400">Bir ilan secin veya yeni ekleyin</p>
+              <p className="text-gray-400">Select a posting or add a new one</p>
             </Card>
           )}
         </div>

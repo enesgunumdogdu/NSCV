@@ -1,145 +1,145 @@
 # NSCV — JobTailor AI
 
-Lokal calisan, ucretsiz, AI destekli CV optimizasyon araci. Is basvurularinda CV'ni ilana gore tailorlamak icin kullanilir.
+A local-first, free, AI-powered CV optimization tool. Tailor your resume to match specific job postings.
 
-- Tamamen lokal calisir, hicbir verini disari cikmaz
-- Ollama ile ucretsiz AI (API key gerekmez)
-- SQLite veritabani (kurulum gerektirmez)
+- Runs entirely on your machine — your data never leaves your device
+- Free AI via Ollama (no API key required)
+- SQLite database (zero configuration)
 
-## Gereksinimler
+## Requirements
 
 - **Node.js** 18+
-- **Ollama** (lokal AI icin)
+- **Ollama** (for local AI)
 
-## Kurulum
+## Setup
 
 ```bash
-# 1. Repoyu klonla
-git clone https://github.com/kullaniciadin/NSCV.git
+# 1. Clone the repo
+git clone https://github.com/yourusername/NSCV.git
 cd NSCV
 
-# 2. Bagimliliklari yukle
+# 2. Install dependencies
 npm install
 
-# 3. Ollama'yi kur (kurulu degilse)
+# 3. Install Ollama (if not already installed)
 brew install ollama
 
-# 4. AI modelini indir (~2GB, tek seferlik)
+# 4. Download the AI model (~2GB, one-time)
 ollama pull llama3.2
 
-# 5. Ollama sunucusunu baslat
+# 5. Start the Ollama server
 ollama serve
 
-# 6. Yeni bir terminalde projeyi baslat
+# 6. In a new terminal, start the project
 npm run dev
 ```
 
-Tarayicida **http://localhost:3000** adresini ac.
+Open **http://localhost:3000** in your browser.
 
-## Kullanim
+## Usage
 
-### 1. CV Olustur
+### 1. Create a CV
 
-**Sol menu > CV'lerim**
+**Sidebar > My CVs**
 
-Iki yol var:
+Two options:
 
-- **+ Yeni CV** — Bos CV olusturup elle doldur
-- **PDF Yukle** — Mevcut PDF ozgecmisini yukle, AI otomatik alanlari doldurur
+- **+ New CV** — Create a blank CV and fill it in manually
+- **Upload PDF** — Upload an existing PDF resume; AI will automatically populate the fields
 
-CV 6 bolumden olusur:
-- Kisisel Bilgiler (ad, email, telefon, LinkedIn, GitHub)
-- Ozet
-- Deneyim (bullet point'lerle)
-- Egitim
-- Projeler
-- Yetenekler (kategori bazli)
+A CV consists of 6 sections:
+- Personal Info (name, email, phone, LinkedIn, GitHub)
+- Summary
+- Experience (with bullet points)
+- Education
+- Projects
+- Skills (grouped by category)
 
-Her bolumu bagimsiz olarak duzenleyebilirsin. Degisiklikleri kaydetmeyi unutma.
+Each section can be edited independently. Don't forget to save your changes.
 
-### 2. Is Ilani Ekle
+### 2. Add a Job Posting
 
-**Sol menu > Is Ilanlari > + Yeni Ilan**
+**Sidebar > Job Postings > + New Posting**
 
-- Pozisyon adini ve sirket/ajans adini gir
-- **Basvuru tipini sec:**
-  - **Dogrudan Sirket** — Normal sirket basvurusu
-  - **Outsource / IK Ajansi** — Randstad, Adecco gibi firmalar uzerinden yapilan basvurular
-- Ilanin tam metnini yapistir
-- Kaydet, sonra **"AI ile Analiz Et"** butonuna tikla
+- Enter the position title and company/agency name
+- **Select the application type:**
+  - **Direct Company** — Standard company application
+  - **Outsource / Agency** — Applications through firms like Randstad, Adecco, etc.
+- Paste the full text of the job posting
+- Save, then click **"Analyze with AI"**
 
-AI analiz sonucunda sunu gorursun:
-- Gereken yetenekler
-- Tercih edilen yetenekler
-- ATS anahtar kelimeler
-- Gizli beklentiler (satir aralarindan cikarilan)
+The AI analysis will show:
+- Required skills
+- Preferred skills
+- ATS keywords
+- Hidden expectations (inferred between the lines)
 
-### 3. CV'ni Tailorla
+### 3. Tailor Your CV
 
-**Sol menu > Tailorla & Analiz Et**
+**Sidebar > Tailor & Analyze**
 
-- CV'ni ve is ilanini sec
-- Iki secenek:
-  - **Eksik Analizi** — CV'ndeki eksikleri gosterir (match score, eksik skill'ler, zayif bullet'lar)
-  - **Otomatik Tailorla** — AI tum CV'ni ilana gore yeniden yazar
+- Select your CV and the job posting
+- Two options:
+  - **Gap Analysis** — Shows gaps in your CV (match score, missing skills, weak bullets)
+  - **Auto Tailor** — AI rewrites your entire CV to match the posting
 
-Outsource ilanlarda AI, sektore ve pozisyona odaklanir. Recruiter'in kolayca tarayabilecegi genel keyword'ler on plana cikar.
+For outsource postings, the AI focuses on industry and role keywords, making the CV easy to scan for non-technical recruiters.
 
-### 4. Versiyon Kaydet
+### 4. Save a Version
 
-Tailorlanmis CV'yi begenirsen **"Versiyon Olarak Kaydet"** ile kaydet.
-Her basvuru icin ayri versiyon tutabilirsin.
+If you're happy with the tailored CV, click **"Save as Version"**.
+You can keep separate versions for each application.
 
-## Teknolojiler
+## Tech Stack
 
-| Katman | Teknoloji |
-|--------|-----------|
+| Layer | Technology |
+|-------|-----------|
 | Frontend | Next.js 14, React, Tailwind CSS |
 | Backend | Next.js API Routes |
-| Veritabani | SQLite (better-sqlite3) |
+| Database | SQLite (better-sqlite3) |
 | AI | Ollama (llama3.2) |
 | PDF Parse | pdf-parse |
 
-## Yapilandirma
+## Configuration
 
-`.env.local` dosyasindan ayarlanabilir:
+Configurable via `.env.local`:
 
 ```env
 OLLAMA_URL=http://localhost:11434
 OLLAMA_MODEL=llama3.2
 ```
 
-Farkli bir model kullanmak istersen:
+To use a different model:
 
 ```bash
 ollama pull mistral
-# .env.local icinde OLLAMA_MODEL=mistral yap
+# Set OLLAMA_MODEL=mistral in .env.local
 ```
 
-## Proje Yapisi
+## Project Structure
 
 ```
 NSCV/
 ├── src/
-│   ├── app/              # Sayfalar ve API route'lari
-│   │   ├── cv/           # CV olusturma/duzenleme sayfasi
-│   │   ├── jobs/         # Is ilani sayfasi
-│   │   ├── tailor/       # Tailoring ve analiz sayfasi
-│   │   └── api/          # Backend API'leri
-│   ├── components/       # React bilesenler
-│   │   ├── cv/           # CV editor bilesenler
-│   │   ├── jobs/         # Ilan bilesenler
-│   │   ├── tailor/       # Analiz/tailoring bilesenler
-│   │   └── ui/           # Genel UI bilesenler
-│   ├── lib/              # Cekirdek katman
-│   │   ├── ai/           # AI istemci, prompt'lar, sema dogrulama
-│   │   ├── types/        # TypeScript tip tanimlari
-│   │   └── db.ts         # SQLite baglantisi
-│   └── hooks/            # React hook'lari
-├── scripts/              # Veritabani semasi
-└── data/                 # SQLite DB dosyasi (gitignore'da)
+│   ├── app/              # Pages and API routes
+│   │   ├── cv/           # CV creation/editing page
+│   │   ├── jobs/         # Job postings page
+│   │   ├── tailor/       # Tailoring and analysis page
+│   │   └── api/          # Backend APIs
+│   ├── components/       # React components
+│   │   ├── cv/           # CV editor components
+│   │   ├── jobs/         # Job posting components
+│   │   ├── tailor/       # Analysis/tailoring components
+│   │   └── ui/           # Shared UI components
+│   ├── lib/              # Core layer
+│   │   ├── ai/           # AI client, prompts, schema validation
+│   │   ├── types/        # TypeScript type definitions
+│   │   └── db.ts         # SQLite connection
+│   └── hooks/            # React hooks
+├── scripts/              # Database schema
+└── data/                 # SQLite DB file (gitignored)
 ```
 
-## Lisans
+## License
 
 MIT

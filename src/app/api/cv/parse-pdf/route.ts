@@ -70,6 +70,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No PDF file provided" }, { status: 400 });
     }
 
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: "File too large. Maximum size is 10MB" }, { status: 400 });
+    }
+
+    if (file.type !== "application/pdf") {
+      return NextResponse.json({ error: "Only PDF files are accepted" }, { status: 400 });
+    }
+
     // Dynamic import for pdf-parse (CommonJS module)
     const pdfParse = (await import("pdf-parse")).default;
     const buffer = Buffer.from(await file.arrayBuffer());

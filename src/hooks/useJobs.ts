@@ -15,7 +15,7 @@ export function useJobs() {
 
   const fetchJob = useCallback(async (id: string) => {
     setLoading(true);
-    const res = await fetch(`/api/jobs?id=${id}`);
+    const res = await fetch(`/api/jobs?id=${encodeURIComponent(id)}`);
     const data = await res.json();
     setCurrentJob(data);
     setLoading(false);
@@ -33,7 +33,7 @@ export function useJobs() {
   }, [fetchList]);
 
   const deleteJob = useCallback(async (id: string) => {
-    await fetch(`/api/jobs?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/jobs?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     if (currentJob?.id === id) setCurrentJob(null);
     await fetchList();
   }, [currentJob, fetchList]);

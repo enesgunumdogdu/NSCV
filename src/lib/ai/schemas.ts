@@ -38,7 +38,7 @@ export const RewriteResultSchema = z.object({
 });
 
 export const TailorResultSchema = z.object({
-  tailoredCV: z.any(), // CV structure validated separately
+  tailoredCV: z.record(z.unknown()),
   changes: z.array(
     z.object({
       section: z.string(),

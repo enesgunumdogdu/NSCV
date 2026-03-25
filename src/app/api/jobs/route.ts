@@ -36,14 +36,19 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const db = getDb();
   const body = await req.json();
+
+  if (!body.rawText || typeof body.rawText !== "string") {
+    return NextResponse.json({ error: "rawText is required" }, { status: 400 });
+  }
+
   const id = uuid();
 
   db.prepare(
     "INSERT INTO jobs (id, title, company, raw_text, is_outsource) VALUES (?, ?, ?, ?, ?)"
   ).run(
     id,
-    body.title || "Untitled Job",
-    body.company || "",
+    String(body.title || "Untitled Job"),
+    String(body.company || ""),
     body.rawText,
     body.isOutsource ? 1 : 0
   );

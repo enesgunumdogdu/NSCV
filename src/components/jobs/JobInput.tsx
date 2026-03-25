@@ -27,7 +27,7 @@ export default function JobInput({ onSubmit, loading }: Props) {
     <div className="space-y-4">
       {/* Outsource toggle */}
       <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <span className="text-sm font-medium text-gray-700">Başvuru Tipi:</span>
+        <span className="text-sm font-medium text-gray-700">Application Type:</span>
         <div className="flex gap-2">
           <button
             type="button"
@@ -38,7 +38,7 @@ export default function JobInput({ onSubmit, loading }: Props) {
             }`}
             onClick={() => setIsOutsource(false)}
           >
-            Dogrudan Sirket
+            Direct Company
           </button>
           <button
             type="button"
@@ -49,51 +49,50 @@ export default function JobInput({ onSubmit, loading }: Props) {
             }`}
             onClick={() => setIsOutsource(true)}
           >
-            Outsource / IK Ajansi
+            Outsource / Agency
           </button>
         </div>
       </div>
 
       {isOutsource && (
         <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg text-sm text-orange-700">
-          Bu ilan bir IK ajansi / outsource firma uzerinden. CV tailoring sirasinda
-          sektore ve pozisyona odaklanilacak, spesifik sirket adi yerine genel
-          anahtar kelimeler on plana cikarilacak.
+          This posting is via a recruitment agency / outsource firm. CV tailoring will
+          focus on industry and role keywords rather than company-specific details.
         </div>
       )}
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="label">Pozisyon</label>
+          <label className="label">Position</label>
           <input
             className="input"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="ör. Senior Frontend Engineer"
+            placeholder="e.g. Senior Frontend Engineer"
           />
         </div>
         <div>
-          <label className="label">{isOutsource ? "IK Ajansi / Firma Adi" : "Sirket"}</label>
+          <label className="label">{isOutsource ? "Agency / Firm Name" : "Company"}</label>
           <input
             className="input"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            placeholder={isOutsource ? "ör. Randstad, Adecco, ManpowerGroup" : "ör. Acme Corp"}
+            placeholder={isOutsource ? "e.g. Randstad, Adecco, ManpowerGroup" : "e.g. Acme Corp"}
           />
         </div>
       </div>
       <div>
-        <label className="label">Ilan Metni (tamamini yapistir)</label>
+        <label className="label">Posting Text (paste the full content)</label>
         <textarea
           className="textarea"
           rows={12}
           value={rawText}
           onChange={(e) => setRawText(e.target.value)}
-          placeholder="Is ilaninin tum metnini buraya yapistirin..."
+          placeholder="Paste the entire job posting text here..."
         />
       </div>
       <Button onClick={handleSubmit} disabled={!rawText.trim() || loading}>
-        {loading ? "Kaydediliyor..." : "Ilani Kaydet"}
+        {loading ? "Saving..." : "Save Posting"}
       </Button>
     </div>
   );

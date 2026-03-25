@@ -24,6 +24,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const db = getDb();
   const body = await req.json();
+
+  if (body.name && typeof body.name !== "string") {
+    return NextResponse.json({ error: "Invalid name" }, { status: 400 });
+  }
+
   const id = uuid();
   const now = new Date().toISOString();
 

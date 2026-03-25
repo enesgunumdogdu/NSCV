@@ -14,7 +14,7 @@ export default function CVPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreate = async () => {
-    const cv = await createCV({ name: "Yeni CV" });
+    const cv = await createCV({ name: "New CV" });
     fetchCV(cv.id);
   };
 
@@ -22,7 +22,6 @@ export default function CVPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // PDF preview URL
     const url = URL.createObjectURL(file);
     setPdfPreviewUrl(url);
 
@@ -38,13 +37,12 @@ export default function CVPage() {
 
       if (!res.ok) {
         const err = await res.json();
-        alert(`PDF parse hatasi: ${err.error}`);
+        alert(`PDF parse error: ${err.error}`);
         return;
       }
 
       const { parsedCV } = await res.json();
 
-      // Create a new CV with parsed data
       const cv = await createCV({
         name: file.name.replace(/\.pdf$/i, ""),
         personalInfo: parsedCV.personalInfo,
@@ -67,7 +65,7 @@ export default function CVPage() {
       fetchCV(cv.id);
     } catch (err) {
       console.error("PDF upload failed:", err);
-      alert("PDF yuklenirken bir hata olustu");
+      alert("An error occurred while uploading the PDF");
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -76,12 +74,12 @@ export default function CVPage() {
 
   return (
     <div>
-      <Header title="CV'lerim" subtitle="CV olustur, duzenle veya PDF yukle" />
+      <Header title="My CVs" subtitle="Create, edit, or upload a PDF" />
 
       <div className="flex gap-6">
         {/* CV List */}
         <div className="w-64 shrink-0 space-y-2">
-          <Button onClick={handleCreate} className="w-full">+ Yeni CV</Button>
+          <Button onClick={handleCreate} className="w-full">+ New CV</Button>
 
           {/* PDF Upload */}
           <div className="relative">
@@ -99,7 +97,7 @@ export default function CVPage() {
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
             >
-              {uploading ? "PDF isleniyor..." : "PDF Yukle"}
+              {uploading ? "Processing PDF..." : "Upload PDF"}
             </Button>
           </div>
 
@@ -133,19 +131,19 @@ export default function CVPage() {
           ))}
           {cvList.length === 0 && (
             <p className="text-sm text-gray-400 text-center py-8">
-              Henuz CV yok. Olusturun veya PDF yukleyin.
+              No CVs yet. Create one or upload a PDF.
             </p>
           )}
         </div>
 
         {/* Editor + Preview */}
         <div className="flex-1">
-          {loading && <p className="text-sm text-gray-500">Yukleniyor...</p>}
+          {loading && <p className="text-sm text-gray-500">Loading...</p>}
           {uploading && (
             <Card className="text-center py-16">
               <div className="animate-pulse">
-                <p className="text-gray-500 text-lg font-medium">PDF isleniyor...</p>
-                <p className="text-gray-400 text-sm mt-2">AI ozgecmisinizi analiz ediyor</p>
+                <p className="text-gray-500 text-lg font-medium">Processing PDF...</p>
+                <p className="text-gray-400 text-sm mt-2">AI is analyzing your resume</p>
               </div>
             </Card>
           )}
@@ -159,9 +157,9 @@ export default function CVPage() {
               {pdfPreviewUrl && (
                 <Card>
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-sm font-semibold text-gray-700">PDF Onizleme</h3>
+                    <h3 className="text-sm font-semibold text-gray-700">PDF Preview</h3>
                     <Button variant="ghost" size="sm" onClick={() => setPdfPreviewUrl(null)}>
-                      Kapat
+                      Close
                     </Button>
                   </div>
                   <iframe
@@ -175,7 +173,7 @@ export default function CVPage() {
           )}
           {!loading && !uploading && !currentCV && (
             <Card className="text-center py-16">
-              <p className="text-gray-400">CV secin, olusturun veya PDF yukleyin</p>
+              <p className="text-gray-400">Select a CV, create one, or upload a PDF</p>
             </Card>
           )}
         </div>

@@ -8,27 +8,25 @@ export async function GET(req: NextRequest) {
   const cvId = req.nextUrl.searchParams.get("cvId");
   const jobId = req.nextUrl.searchParams.get("jobId");
 
-  let query = "SELECT * FROM cv_versions WHERE 1=1";
-  const params: string[] = [];
+  let rows: { id: string; cv_id: string; job_id: string | null; label: string; data: string; created_at: string }[];
 
-  if (cvId) {
-    query += " AND cv_id = ?";
-    params.push(cvId);
+  if (cvId && jobId) {
+    rows = db.prepare(
+      "SELECT * FROM cv_versions WHERE cv_id = ? AND job_id = ? ORDER BY created_at DESC"
+    ).all(cvId, jobId) as typeof rows;
+  } else if (cvId) {
+    rows = db.prepare(
+      "SELECT * FROM cv_versions WHERE cv_id = ? ORDER BY created_at DESC"
+    ).all(cvId) as typeof rows;
+  } else if (jobId) {
+    rows = db.prepare(
+      "SELECT * FROM cv_versions WHERE job_id = ? ORDER BY created_at DESC"
+    ).all(jobId) as typeof rows;
+  } else {
+    rows = db.prepare(
+      "SELECT * FROM cv_versions ORDER BY created_at DESC"
+    ).all() as typeof rows;
   }
-  if (jobId) {
-    query += " AND job_id = ?";
-    params.push(jobId);
-  }
-
-  query += " ORDER BY created_at DESC";
-  const rows = db.prepare(query).all(...params) as {
-    id: string;
-    cv_id: string;
-    job_id: string | null;
-    label: string;
-    data: string;
-    created_at: string;
-  }[];
 
   return NextResponse.json(
     rows.map((r) => ({
@@ -46,6 +44,11 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const db = getDb();
   const body = await req.json();
+
+  if (!body.cvId || !body.label || !body.data) {
+    return NextResponse.json({ error: "cvId, label, and data are required" }, { status: 400 });
+  }
+
   const id = uuid();
 
   db.prepare(

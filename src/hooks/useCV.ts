@@ -16,7 +16,7 @@ export function useCV() {
 
   const fetchCV = useCallback(async (id: string) => {
     setLoading(true);
-    const res = await fetch(`/api/cv?id=${id}`);
+    const res = await fetch(`/api/cv?id=${encodeURIComponent(id)}`);
     const data = await res.json();
     setCurrentCV(data);
     setLoading(false);
@@ -44,7 +44,7 @@ export function useCV() {
   }, [fetchList]);
 
   const deleteCV = useCallback(async (id: string) => {
-    await fetch(`/api/cv?id=${id}`, { method: "DELETE" });
+    await fetch(`/api/cv?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     if (currentCV?.id === id) setCurrentCV(null);
     await fetchList();
   }, [currentCV, fetchList]);
